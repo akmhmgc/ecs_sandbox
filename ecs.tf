@@ -87,6 +87,6 @@ resource "aws_ecs_service" "nginx_service" {
 }
 
 resource "aws_cloudwatch_log_group" "nginx_task" {
-  name              = "/ecs/kafka_trial_task"
+  name              = "/ecs/nginx_task"
   retention_in_days = 7
 }
