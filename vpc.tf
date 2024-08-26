@@ -87,7 +87,7 @@ resource "aws_vpc_endpoint" "ssm" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
@@ -101,7 +101,7 @@ resource "aws_vpc_endpoint" "ssmmessages" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
@@ -115,11 +115,11 @@ resource "aws_vpc_endpoint" "ec2messages" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
-# ecr
+# ecs
 resource "aws_vpc_endpoint" "ecs-agent" {
   vpc_endpoint_type = "Interface"
   vpc_id            = aws_vpc.main.id
@@ -130,7 +130,7 @@ resource "aws_vpc_endpoint" "ecs-agent" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
@@ -144,7 +144,7 @@ resource "aws_vpc_endpoint" "ecs-telemetry" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
@@ -158,13 +158,13 @@ resource "aws_vpc_endpoint" "ecs" {
   ]
   private_dns_enabled = true
   security_group_ids = [
-    aws_security_group.ssm.id
+    aws_security_group.private_link.id
   ]
 }
 
-resource "aws_security_group" "ssm" {
-  name        = "ssm-sg"
-  description = "ssm-sg"
+resource "aws_security_group" "private_link" {
+  name        = "private-link-sg"
+  description = "private-link-sg"
   vpc_id      = aws_vpc.main.id
   ingress {
     from_port   = 443
@@ -174,6 +174,6 @@ resource "aws_security_group" "ssm" {
   }
 
   tags = {
-    Name = "ssm-sg"
+    Name = "private-link-sg"
   }
 }
