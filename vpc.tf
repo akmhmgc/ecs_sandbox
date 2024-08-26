@@ -1,5 +1,8 @@
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
+
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = "main_vpc"
   }
@@ -44,6 +47,18 @@ resource "aws_route_table" "public" {
 resource "aws_route_table_association" "a" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table" "sub" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "sub_route_table"
+  }
+}
+
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.sub.id
+  route_table_id = aws_route_table.sub.id
 }
 
 
