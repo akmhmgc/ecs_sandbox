@@ -52,7 +52,7 @@ resource "aws_instance" "ecs_instance" {
   ami                         = data.aws_ami.most_recent_ecs_optimized_amazon_linux.image_id
   instance_type               = "m5.large"
   subnet_id                   = aws_subnet.sub.id
-  security_groups             = [aws_security_group.ecs_instance_sg.id]
+  vpc_security_group_ids      = [aws_security_group.ecs_instance_sg.id]
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
   associate_public_ip_address = false
   user_data                   = <<-EOF
