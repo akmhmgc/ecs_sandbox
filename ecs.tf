@@ -75,7 +75,7 @@ resource "aws_ecs_service" "nginx_service" {
   desired_count   = 2
   launch_type     = "EC2"
   network_configuration {
-    subnets         = [aws_subnet.public.id]
+    subnets         = [aws_subnet.sub.id]
     security_groups = [aws_security_group.ecs_http_sg.id]
   }
   depends_on = [aws_lb_target_group.nginx_tg]
