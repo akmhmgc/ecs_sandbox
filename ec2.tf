@@ -9,7 +9,7 @@ data "aws_ami" "most_recent_ecs_optimized_amazon_linux" {
 }
 
 resource "aws_iam_role" "ecs_instance_role" {
-  name = "ecsInstanceRole"
+  name = "ecsInstanceRoleSandBox"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
