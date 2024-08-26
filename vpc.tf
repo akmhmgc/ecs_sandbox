@@ -75,6 +75,8 @@ data "aws_iam_policy_document" "vpc_endpoint" {
   }
 }
 
+# ssm
+
 resource "aws_vpc_endpoint" "ssm" {
   vpc_endpoint_type = "Interface"
   vpc_id            = aws_vpc.main.id
@@ -116,6 +118,50 @@ resource "aws_vpc_endpoint" "ec2messages" {
     aws_security_group.ssm.id
   ]
 }
+
+# ecr
+resource "aws_vpc_endpoint" "ecs-agent" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.ap-northeast-1.ecs-agent"
+  policy            = data.aws_iam_policy_document.vpc_endpoint.json
+  subnet_ids = [
+    aws_subnet.sub.id
+  ]
+  private_dns_enabled = true
+  security_group_ids = [
+    aws_security_group.ssm.id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ecs-telemetry" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.ap-northeast-1.ecs-telemetry"
+  policy            = data.aws_iam_policy_document.vpc_endpoint.json
+  subnet_ids = [
+    aws_subnet.sub.id
+  ]
+  private_dns_enabled = true
+  security_group_ids = [
+    aws_security_group.ssm.id
+  ]
+}
+
+resource "aws_vpc_endpoint" "ecs" {
+  vpc_endpoint_type = "Interface"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.ap-northeast-1.ecs"
+  policy            = data.aws_iam_policy_document.vpc_endpoint.json
+  subnet_ids = [
+    aws_subnet.sub.id
+  ]
+  private_dns_enabled = true
+  security_group_ids = [
+    aws_security_group.ssm.id
+  ]
+}
+
 resource "aws_security_group" "ssm" {
   name        = "ssm-sg"
   description = "ssm-sg"
