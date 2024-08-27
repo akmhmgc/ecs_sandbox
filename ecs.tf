@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
   container_definitions = jsonencode([
     {
       name  = "nginx"
-      image = "nginx:latest"
+      image = "public.ecr.aws/nginx/nginx:latest"
       portMappings = [
         {
           containerPort = 80
