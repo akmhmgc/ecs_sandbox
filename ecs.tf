@@ -52,9 +52,9 @@ resource "aws_ecs_task_definition" "nginx_task" {
 resource "aws_security_group" "ecs_http_sg" {
   vpc_id = aws_vpc.main.id
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
     security_groups = [aws_security_group.nginx_sg.id]
   }
   egress {
@@ -89,4 +89,10 @@ resource "aws_ecs_service" "nginx_service" {
 resource "aws_cloudwatch_log_group" "nginx_task" {
   name              = "/ecs/nginx_task"
   retention_in_days = 7
+}
+
+# pull through cache setting
+resource "aws_ecr_pull_through_cache_rule" "ecr_public" {
+  ecr_repository_prefix = "ecr-public"
+  upstream_registry_url = "public.ecr.aws"
 }
