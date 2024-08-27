@@ -51,6 +51,11 @@ resource "aws_route_table_association" "a" {
 
 resource "aws_route_table" "sub" {
   vpc_id = aws_vpc.main.id
+
+    route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.public.id
+  }
   tags = {
     Name = "sub_route_table"
   }
@@ -175,5 +180,24 @@ resource "aws_security_group" "private_link" {
 
   tags = {
     Name = "private-link-sg"
+  }
+}
+
+# EC2がdocker hubからimageをpullするためのNAT Gateway
+resource "aws_eip" "nat_gateway" {
+  domain     = "vpc"
+  depends_on = [aws_internet_gateway.main]
+
+  tags = {
+    Name = "nat_gateway"
+  }
+}
+
+resource "aws_nat_gateway" "public" {
+  allocation_id = aws_eip.nat_gateway.id
+  subnet_id     = aws_subnet.public.id
+
+  tags = {
+    Name = "nat_gateway"
   }
 }
