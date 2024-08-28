@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
       portMappings = [
         {
           containerPort = 80
-          hostPort      = 80
+          hostPort      = 0
         }
       ]
       logConfiguration = {
@@ -72,9 +72,9 @@ resource "aws_ecs_service" "nginx_service" {
   name            = "nginx_service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.nginx_task.arn
-  desired_count   = 1
+  desired_count   = 3
   launch_type     = "EC2"
-  depends_on = [aws_lb_target_group.nginx_tg]
+  depends_on      = [aws_lb_target_group.nginx_tg]
   load_balancer {
     target_group_arn = aws_lb_target_group.nginx_tg.arn
     container_name   = "nginx"
