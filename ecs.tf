@@ -21,7 +21,7 @@ resource "aws_iam_role" "ecs_task_exec" {
 
 resource "aws_ecs_task_definition" "nginx_task" {
   family                   = "nginx_task"
-  network_mode             = "awsvpc"
+  network_mode             = "bridge"
   execution_role_arn       = aws_iam_role.ecs_task_exec.arn
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
       portMappings = [
         {
           containerPort = 80
-          hostPort      = 80
+          hostPort      = 0
         }
       ]
       logConfiguration = {
@@ -72,13 +72,9 @@ resource "aws_ecs_service" "nginx_service" {
   name            = "nginx_service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.nginx_task.arn
-  desired_count   = 2
+  desired_count   = 3
   launch_type     = "EC2"
-  network_configuration {
-    subnets         = [aws_subnet.sub.id]
-    security_groups = [aws_security_group.ecs_http_sg.id]
-  }
-  depends_on = [aws_lb_target_group.nginx_tg]
+  depends_on      = [aws_lb_target_group.nginx_tg]
   load_balancer {
     target_group_arn = aws_lb_target_group.nginx_tg.arn
     container_name   = "nginx"
