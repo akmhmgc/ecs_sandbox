@@ -45,8 +45,14 @@ resource "aws_ecs_task_definition" "nginx_task" {
           "awslogs-stream-prefix" : "ecs"
         }
       }
+    },
+    {
+      name    = "ubuntu"
+      image   = "public.ecr.aws/ubuntu/ubuntu:latest"
+      command = ["sleep", "8000"]
     }
   ])
+  skip_destroy = true
 }
 
 resource "aws_security_group" "ecs_http_sg" {
@@ -79,6 +85,9 @@ resource "aws_ecs_service" "nginx_service" {
     target_group_arn = aws_lb_target_group.nginx_tg.arn
     container_name   = "nginx"
     container_port   = 80
+  }
+  lifecycle {
+    ignore_changes = [task_definition]
   }
 }
 
