@@ -6,5 +6,5 @@ tasks:
       ATTRIBUTES: "arn:aws:ecs:ap-northeast-1:533557086642:service/nginx_cluster/nginx_service"
     cmds:
       - |
-        aws cloudtrail lookup-events --lookup-attributes AttributeKey=ResourceName,AttributeValue={{.ATTRIBUTES}}  --max-items 5 \
-        | jq -r '.Events[] | .CloudTrailEvent = (.CloudTrailEvent | fromjson ) | select(.EventName == "UpdateService") | {EventTime: .EventTime, EventName: .EventName, Deployments: .CloudTrailEvent.responseElements.service.deployments[] | {Status: .status, TaskDefinition: .taskDefinition}}'
+        aws cloudtrail lookup-events --lookup-attributes AttributeKey=ResourceName,AttributeValue={{.ATTRIBUTES}}  --max-items 1 \
+        | jq -r '.Events[] | .CloudTrailEvent = (.CloudTrailEvent | fromjson ) | select(.EventName == "UpdateService") | {EventTime: .EventTime, EventName: .EventName, Deployments: .CloudTrailEvent.responseElements.service.deployments.[] | {Status: .status, TaskDefinition: .taskDefinition}}'
