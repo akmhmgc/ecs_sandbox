@@ -39,13 +39,6 @@ resource "aws_security_group" "ecs_instance_sg" {
   name_prefix = "ecs-instance-sg-"
   vpc_id      = aws_vpc.main.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -54,14 +47,15 @@ resource "aws_security_group" "ecs_instance_sg" {
   }
 }
 
+
 resource "aws_instance" "ecs_instance" {
-  ami                    = data.aws_ami.most_recent_ecs_optimized_amazon_linux.image_id
-  instance_type          = "m5.large"
-  vpc_security_group_ids = [aws_security_group.ecs_instance_sg.id]
-  subnet_id              = aws_subnet.public.id
-  iam_instance_profile   = aws_iam_instance_profile.ecs_instance_profile.name
-  associate_public_ip_address = true
-  user_data              = <<-EOF
+  ami                         = data.aws_ami.most_recent_ecs_optimized_amazon_linux.image_id
+  instance_type               = "m5.large"
+  subnet_id                   = aws_subnet.sub.id
+  vpc_security_group_ids      = [aws_security_group.ecs_instance_sg.id]
+  iam_instance_profile        = aws_iam_instance_profile.ecs_instance_profile.name
+  associate_public_ip_address = false
+  user_data                   = <<-EOF
     #!/bin/bash
     echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
     yum install -y amazon-ssm-agent

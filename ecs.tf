@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
   container_definitions = jsonencode([
     {
       name  = "nginx"
-      image = "nginx:latest"
+      image = "public.ecr.aws/nginx/nginx:latest"
       portMappings = [
         {
           containerPort = 80
@@ -52,10 +52,10 @@ resource "aws_ecs_task_definition" "nginx_task" {
 resource "aws_security_group" "ecs_http_sg" {
   vpc_id = aws_vpc.main.id
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.nginx_sg.id]
   }
   egress {
     from_port   = 0
@@ -75,7 +75,7 @@ resource "aws_ecs_service" "nginx_service" {
   desired_count   = 2
   launch_type     = "EC2"
   network_configuration {
-    subnets         = [aws_subnet.public.id]
+    subnets         = [aws_subnet.sub.id]
     security_groups = [aws_security_group.ecs_http_sg.id]
   }
   depends_on = [aws_lb_target_group.nginx_tg]
@@ -87,6 +87,12 @@ resource "aws_ecs_service" "nginx_service" {
 }
 
 resource "aws_cloudwatch_log_group" "nginx_task" {
-  name              = "/ecs/kafka_trial_task"
+  name              = "/ecs/nginx_task"
   retention_in_days = 7
+}
+
+# pull through cache setting
+resource "aws_ecr_pull_through_cache_rule" "ecr_public" {
+  ecr_repository_prefix = "ecr-public"
+  upstream_registry_url = "public.ecr.aws"
 }
