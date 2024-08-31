@@ -85,6 +85,9 @@ resource "aws_ecs_service" "nginx_service" {
     container_name   = "nginx"
     container_port   = 80
   }
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 }
 
 resource "aws_cloudwatch_log_group" "nginx_task" {
