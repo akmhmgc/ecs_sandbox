@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
   container_definitions = jsonencode([
     {
       name  = "nginx"
-      image = "public.ecr.aws/nginx/nginx:latest"
+      image = "${aws_ecr_repository.nginx.repository_url}:latest"
       portMappings = [
         {
           containerPort = 80
@@ -96,4 +96,12 @@ resource "aws_cloudwatch_log_group" "nginx_task" {
 resource "aws_ecr_pull_through_cache_rule" "ecr_public" {
   ecr_repository_prefix = "ecr-public"
   upstream_registry_url = "public.ecr.aws"
+}
+
+resource "aws_ecr_repository" "nginx" {
+  name = "hamaguchi/nginx"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
