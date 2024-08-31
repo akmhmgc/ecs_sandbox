@@ -47,6 +47,7 @@ resource "aws_ecs_task_definition" "nginx_task" {
       }
     }
   ])
+  skip_destroy = true
 }
 
 resource "aws_security_group" "ecs_http_sg" {
