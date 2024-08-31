@@ -8,3 +8,14 @@ tasks:
       - |
         aws cloudtrail lookup-events --lookup-attributes AttributeKey=ResourceName,AttributeValue={{.ATTRIBUTES}}  --max-items 1 \
         | jq -r '.Events[] | .CloudTrailEvent = (.CloudTrailEvent | fromjson ) | select(.EventName == "UpdateService") | {EventTime: .EventTime, EventName: .EventName, Deployments: .CloudTrailEvent.responseElements.service.deployments.[] | {Status: .status, TaskDefinition: .taskDefinition}}'
+  build_and_push:
+    desc: "DockerイメージをビルドしてECRにプッシュする"
+    vars:
+      PROJECT_NAME: "hamaguchi/nginx"
+      ECR_REPOSITORY: "533557086642.dkr.ecr.ap-northeast-1.amazonaws.com/{{.PROJECT_NAME}}"
+      IMAGE_TAG: "latest"
+    cmds:
+      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin {{.ECR_REPOSITORY}}
+      - docker build --build-arg project=app --platform linux/amd64 -t {{.PROJECT_NAME}} .
+      - docker tag {{.PROJECT_NAME}}:latest {{.ECR_REPOSITORY}}:{{.IMAGE_TAG}}
+      - docker push {{.ECR_REPOSITORY}}:{{.IMAGE_TAG}}
